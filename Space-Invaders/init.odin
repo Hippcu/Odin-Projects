@@ -18,14 +18,26 @@ init_invaders :: proc () -> InvaderFormation {
    formation.speed   = 40.0
    formation.step    = 20.0
 
-   // Now the annoying mathy part
-   // Depends on the spacing/how large the invaders are... spacing spacing
    // Maybe a little Odin array action?
    start_x      := 100.0
    start_y      := 80.0
-   spacing_x    := 40
+   spacing_x    := 40.0
    spacing_y    := 30.0
 
+   // Can be replaced with SOA/swizzling, but brain too small
+   for row in 0..<ENMY_ROWS {
+    for col in 0..<ENMY_COLS {
+        // Creation of the individual enemies
+        formation.enemies[row][col] = Invader {
+            pos = rl.Vector2{
+                f32(start_x + f64(col) * spacing_x), // Man that's ugly 
+                f32(start_y + f64(row) * spacing_y) // rl.Vector2 requires 2[f32]
+            },
+            alive = true,
+        }
+    }
+   }
 
-
+   update_formation_bounds(&formation) // Comes from entity_handler.odin
+   return formation
 }
