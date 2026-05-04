@@ -1,4 +1,4 @@
-package main
+package spaceinvaders
 
 import rl "vendor:raylib"
 

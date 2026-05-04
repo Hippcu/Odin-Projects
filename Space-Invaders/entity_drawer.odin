@@ -1,4 +1,4 @@
-package main
+package spaceinvaders
 
 import rl "vendor:raylib"
 
@@ -23,6 +23,7 @@ draw_player_bullet :: proc (b: ^Bullet) {
 }
 
 draw_enemies :: proc (f: ^InvaderFormation) {
+    // I SEE WHY SOA PROGRAMMING IS SO NICE I HATE NESTED LOOPS OVER AND OVER 
     for row in 0..<ENMY_ROWS {
         for col in 0..<ENMY_COLS {
             inv := &f.enemies[row][col]

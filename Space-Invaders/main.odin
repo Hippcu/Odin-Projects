@@ -1,4 +1,4 @@
-package main
+package spaceinvaders
 
 import "core:fmt"
 import rl "vendor:raylib"
@@ -40,12 +40,26 @@ main :: proc()
         draw_enemies(&enemies)
         draw_enemy_bullets(&enemy_bullets)
 
+        if !player.alive { 
+            game_over(&player)
+        }
 
         if rl.IsKeyPressed(.ESCAPE) { break } // Close Main Loop
         rl.EndDrawing()
     }
     
-    //free_all()
     fmt.println("Successfully closed")
     rl.CloseWindow()
+}
+
+game_over :: proc(p: ^Player) {
+    textWidth := rl.MeasureText("PRESS SPACE TO CONTINUE", 34)
+
+    rl.DrawText("PRESS SPACE TO CONTINUE",
+        (SCREEN_W / 2) - (textWidth/2),
+        (SCREEN_H / 2) - (34/2), 
+        34, 
+        rl.WHITE)
+
+    if rl.IsKeyPressed(.SPACE) { p.alive = true }
 }

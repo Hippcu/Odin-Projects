@@ -1,4 +1,4 @@
-package main
+package spaceinvaders
 
 import rl "vendor:raylib"
 
@@ -167,8 +167,6 @@ handle_collision :: proc(p: ^Player, p_b: ^Bullet, f: ^InvaderFormation, e_b: ^[
             if rect_point_hit(player_rect, b.pos) {
                 b.active = false
                 p.alive = false
-                // PUT GAME OVER SCREEN/OPTION TO RESTART?
-                rl.WindowShouldClose()
             }
         }
     }
