@@ -5,23 +5,34 @@ import rl "vendor:raylib"
 
 main :: proc() 
 {
+    // Settings/Pre-settings config
     rl.InitWindow(SCREEN_W, SCREEN_H, "Space-Invaders") // Settings from init.odin
     rl.SetTargetFPS(60)
 
+    // Init the gameplay/interactable elements
     player := init_player()
-
+    p_bullet: Bullet
     enemies := init_invaders()
 
+    enemy_bullets: [64]Bullet // Simple pool of ammo
 
+    // Begin Game Loop
     for !rl.WindowShouldClose() 
     {
         dt := rl.GetFrameTime()
 
+        // Update Entities
+        update_player(&player, &p_bullet, dt)
         update_formation(&enemies, dt)
-        rl.BeginDrawing()
 
+        update_bullets(&p_bullet, &enemy_bullets, dt)
+
+
+        rl.BeginDrawing()
         rl.ClearBackground(rl.BLACK)
 
+        draw_player(&player)
+        draw_player_bullet(&p_bullet)
 
         if rl.IsKeyPressed(.ESCAPE) { break } // Close Main Loop
         rl.EndDrawing()
