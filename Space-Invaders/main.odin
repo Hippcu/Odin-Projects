@@ -24,10 +24,13 @@ main :: proc()
         // Update Entities --> entity_handler
         update_player(&player, &p_bullet, dt)
         update_formation(&enemies, dt)
-
+        update_enemy_shots(&enemies, &enemy_bullets, dt)
         update_bullets(&p_bullet, &enemy_bullets, dt)
 
+        // Begin handling collisions after done testing
+        handle_collision(&player, &p_bullet, &enemies, &enemy_bullets)
 
+        // Raylib Functions
         rl.BeginDrawing()
         rl.ClearBackground(rl.BLACK)
 

@@ -33,7 +33,7 @@ update_formation :: proc (formation: ^InvaderFormation, dt: f32) {
     inv_movement_x := formation.speed * f32(formation.dir) * dt
 
     // Detect edges of screen
-    // This magic number 12 is half the size of the invader across
+    // This magic number 12 is half the size of the invader across, it's like 4am
     if formation.max_bound.x + 12 + inv_movement_x > SCREEN_W - EDGE_MARGIN ||
     formation.min_bound.x - 12 + inv_movement_x < EDGE_MARGIN {
         // Reverse direction and step down
@@ -72,6 +72,104 @@ update_bullets :: proc(player_b: ^Bullet, enemy_b: ^[64]Bullet, dt: f32) {
         b.pos.y += b.vel.y * dt
         if b.pos.y > SCREEN_H {
             b.active = false
+        }
+    }
+}
+
+update_enemy_shots :: proc (f: ^InvaderFormation, pool: ^[64]Bullet, dt: f32) {
+    // EXTREMELY simple firing method... I'm tired
+    column_cd : [ENMY_COLS]f32
+    
+    for col in 0..<ENMY_COLS {
+        if column_cd[col] > 0 {
+            column_cd[col] -= dt
+        }
+    }
+
+    for col in 0..<ENMY_COLS {
+        if column_cd[col] > 0 { continue }
+
+        // find lowest alive invader in this column
+        lowest: ^Invader = nil
+        for row in 0..<ENMY_ROWS {
+            inv := &f.enemies[row][col]
+            if !inv.alive { continue }
+            if lowest == nil || inv.pos.y > lowest.pos.y {
+                lowest = inv
+            }
+        }
+        if lowest == nil { continue }
+
+        // small chance to fire
+        if rl.GetRandomValue(0, 1000) < 5 {
+            // spawn bullet
+            for &b in pool {
+                if !b.active {
+                    b.active = true
+                    b.pos = rl.Vector2{ lowest.pos.x, lowest.pos.y + 10 }
+                    b.vel = rl.Vector2{ 0, 150 }
+                    break
+                }
+            }
+
+            // set cooldown (randomized)
+            column_cd[col] = 0.5 + f32(rl.GetRandomValue(0, 200)) / 200.0
+        }
+    }
+}
+
+// Collision helper
+rect_point_hit :: proc(r: rl.Rectangle, p: rl.Vector2) -> bool {
+    return p.x >= r.x &&
+    p.x <= r.x + r.width &&
+    p.y >= r.y &&
+    p.y <= r.y + r.height
+}
+
+// Collision Manager
+handle_collision :: proc(p: ^Player, p_b: ^Bullet, f: ^InvaderFormation, e_b: ^[64]Bullet) {
+    if p_b.active {
+        for row in 0..<ENMY_ROWS {
+            for col in 0..<ENMY_COLS {
+                inv := &f.enemies[row][col]
+                if !inv.alive { continue }
+
+                inv_rect := rl.Rectangle{
+                    inv.pos.x - 12.0,
+                    inv.pos.y - 8.0,
+                    24.0,
+                    16.0,
+                }
+
+                if rect_point_hit(inv_rect, p_b.pos) {
+                    inv.alive = false
+                    p_b.active = false
+                    // Slightly increase invader speed?
+                    f.speed += 1.0
+                    update_formation_bounds(f)
+                    break
+                }
+            }
+        }
+    }
+
+    // Handle Collision between enemy bullets and player
+    if p.alive {
+        player_rect := rl.Rectangle{
+            p.pos.x - 15.0,
+            p.pos.y - 10.0,
+            30.0,
+            15.0,
+        }
+
+        for &b in e_b {
+            if !b.active { continue }
+            if rect_point_hit(player_rect, b.pos) {
+                b.active = false
+                p.alive = false
+                // PUT GAME OVER SCREEN/OPTION TO RESTART?
+                rl.WindowShouldClose()
+            }
         }
     }
 }
