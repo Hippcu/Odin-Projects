@@ -15,12 +15,12 @@ init_player :: proc () -> Player {
 init_invaders :: proc () -> InvaderFormation {
    formation : InvaderFormation
    formation.dir     = 1
-   formation.speed   = 40.0
+   formation.speed   = 100.0
    formation.step    = 20.0
 
    // Maybe a little Odin array action?
    start_x      := 100.0
-   start_y      := 80.0
+   start_y      := 40.0
    spacing_x    := 40.0
    spacing_y    := 30.0
 

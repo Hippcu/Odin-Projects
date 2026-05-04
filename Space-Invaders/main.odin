@@ -21,7 +21,7 @@ main :: proc()
     {
         dt := rl.GetFrameTime()
 
-        // Update Entities
+        // Update Entities --> entity_handler
         update_player(&player, &p_bullet, dt)
         update_formation(&enemies, dt)
 
@@ -31,8 +31,12 @@ main :: proc()
         rl.BeginDrawing()
         rl.ClearBackground(rl.BLACK)
 
+        // Draw Entities --> entity_drawer
         draw_player(&player)
         draw_player_bullet(&p_bullet)
+        draw_enemies(&enemies)
+        draw_enemy_bullets(&enemy_bullets)
+
 
         if rl.IsKeyPressed(.ESCAPE) { break } // Close Main Loop
         rl.EndDrawing()

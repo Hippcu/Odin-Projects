@@ -2,6 +2,8 @@ package main
 
 import rl "vendor:raylib"
 
+EDGE_MARGIN :: 10.0
+
 // Readjust the screen boundaries for the invaders
 // Once again, SOA/Swizzle over nested loops but I'm not good at it
 update_formation_bounds :: proc(formation: ^InvaderFormation) {
@@ -31,13 +33,14 @@ update_formation :: proc (formation: ^InvaderFormation, dt: f32) {
     inv_movement_x := formation.speed * f32(formation.dir) * dt
 
     // Detect edges of screen
-    if formation.max_bound.x + inv_movement_x > SCREEN_W - 40.0 ||
-    formation.min_bound.x + inv_movement_x < 40.0 {
+    // This magic number 12 is half the size of the invader across
+    if formation.max_bound.x + 12 + inv_movement_x > SCREEN_W - EDGE_MARGIN ||
+    formation.min_bound.x - 12 + inv_movement_x < EDGE_MARGIN {
         // Reverse direction and step down
         formation.dir = -formation.dir
         for row in 0..<ENMY_ROWS {
             for col in 0..<ENMY_COLS {
-                inv := formation.enemies[row][col]
+                inv := &formation.enemies[row][col]
                 if !inv.alive { continue }
                 inv.pos.y += formation.step
             }
@@ -46,7 +49,7 @@ update_formation :: proc (formation: ^InvaderFormation, dt: f32) {
     else { // Normal horizontal movement (not touching edge)
         for row in 0..<ENMY_ROWS {
             for col in 0..<ENMY_COLS {
-                inv := formation.enemies[row][col]
+                inv := &formation.enemies[row][col]
                 if !inv.alive { continue }
                 inv.pos.x += inv_movement_x 
             }

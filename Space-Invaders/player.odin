@@ -13,7 +13,7 @@ update_player :: proc(p: ^Player, b: ^Bullet, dt: f32) {
 
     if rl.IsKeyPressed(.SPACE) && !b.active {
         b.pos       = rl.Vector2 { p.pos.x, p.pos.y - 10.0 }
-        b.vel       = rl.Vector2 { 0.0, -400.0 }
+        b.vel       = rl.Vector2 { 0.0, -500.0 }
         b.active    = true
     }
 }

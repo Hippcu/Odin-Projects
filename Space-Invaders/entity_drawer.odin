@@ -22,17 +22,29 @@ draw_player_bullet :: proc (b: ^Bullet) {
     )
 }
 
-draw_enemy :: proc (f: ^InvaderFormation) {
+draw_enemies :: proc (f: ^InvaderFormation) {
     for row in 0..<ENMY_ROWS {
         for col in 0..<ENMY_COLS {
             inv := &f.enemies[row][col]
             if !inv.alive { continue }
             rl.DrawRectangle(
-                cast(i32)(inv.pos.x - 12.0),
-                cast(i32)(inv.pos.y -8.0),
-                24, 16,
+                cast(i32)(inv.pos.x - 12.0), // Invader left/right edge
+                cast(i32)(inv.pos.y -8.0), // Top/Bottom
+                24, 16, // Invader size
                 rl.SKYBLUE
             )
         }
+    }
+}
+
+draw_enemy_bullets :: proc (pool: ^[64]Bullet) {
+    for &b in pool {
+        if !b.active { continue }
+        rl.DrawRectangle(
+            cast(i32)(b.pos.x -2.0),
+            cast(i32)(b.pos.y - 6.0),
+            4, 12,
+            rl.RED 
+        )
     }
 }
