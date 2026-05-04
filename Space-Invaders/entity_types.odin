@@ -9,7 +9,7 @@ Player :: struct
     alive  : bool,      // Keeps one-hit deaths and shielding simple
 }
 
-Projectile :: struct 
+Bullet :: struct 
 {
     pos     : rl.Vector2,
     vel     : rl.Vector2,
