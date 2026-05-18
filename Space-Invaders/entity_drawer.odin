@@ -2,17 +2,20 @@ package spaceinvaders
 
 import rl "vendor:raylib"
 
-draw_player :: proc (p: ^Player) {
+draw_player :: proc(p: ^Player) 
+{
     if !p.alive { return }
     rl.DrawRectangle(
-        cast(i32)(p.pos.x - 15.0), //DrawRect requires i32, Vec2 is 2[f32]
-        cast(i32)(p.pos.y - 10.0),
-        30, 20,
+        cast(i32)(p.pos.x - PLAYER_HALF_W),
+        cast(i32)(p.pos.y - PLAYER_DRAW_HALF_H),
+        cast(i32)PLAYER_W,
+        cast(i32)PLAYER_DRAW_H,
         rl.GREEN,
     )
 }
 
-draw_player_bullet :: proc (b: ^Bullet) {
+draw_player_bullet :: proc(b: ^Bullet) 
+{
     if !b.active { return }
     rl.DrawRectangle(
         cast(i32)(b.pos.x - 2.0),
@@ -22,30 +25,32 @@ draw_player_bullet :: proc (b: ^Bullet) {
     )
 }
 
-draw_enemies :: proc (f: ^InvaderFormation) {
-    // I SEE WHY SOA PROGRAMMING IS SO NICE I HATE NESTED LOOPS OVER AND OVER 
+draw_enemies :: proc(formation: ^InvaderFormation) 
+{
     for row in 0..<ENMY_ROWS {
         for col in 0..<ENMY_COLS {
-            inv := &f.enemies[row][col]
+            inv := &formation.enemies[row][col]
             if !inv.alive { continue }
             rl.DrawRectangle(
-                cast(i32)(inv.pos.x - 12.0), // Invader left/right edge
-                cast(i32)(inv.pos.y -8.0), // Top/Bottom
-                24, 16, // Invader size
-                rl.SKYBLUE
+                cast(i32)(inv.pos.x - INVADER_HALF_W),
+                cast(i32)(inv.pos.y - INVADER_HALF_H),
+                cast(i32)INVADER_W,
+                cast(i32)INVADER_H,
+                rl.SKYBLUE,
             )
         }
     }
 }
 
-draw_enemy_bullets :: proc (pool: ^[64]Bullet) {
+draw_enemy_bullets :: proc(pool: ^[ENEMY_BULLET_POOL_SIZE]Bullet) 
+{
     for &b in pool {
         if !b.active { continue }
         rl.DrawRectangle(
-            cast(i32)(b.pos.x -2.0),
+            cast(i32)(b.pos.x - 2.0),
             cast(i32)(b.pos.y - 6.0),
             4, 12,
-            rl.RED 
+            rl.RED,
         )
     }
 }

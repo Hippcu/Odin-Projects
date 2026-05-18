@@ -5,61 +5,64 @@ import rl "vendor:raylib"
 
 main :: proc() 
 {
-    // Settings/Pre-settings config
-    rl.InitWindow(SCREEN_W, SCREEN_H, "Space-Invaders") // Settings from init.odin
+    // Settings init
+    rl.InitWindow(SCREEN_W, SCREEN_H, "Space-Invaders")
     rl.SetTargetFPS(60)
 
-    // Init the gameplay/interactable elements
+    // Init gameplay elements
     player := init_player()
-    p_bullet: Bullet
+    player_bullet: Bullet
     enemies := init_invaders()
+    enemy_bullets: [ENEMY_BULLET_POOL_SIZE]Bullet
 
-    enemy_bullets: [64]Bullet // Simple pool of ammo
-
-    // Begin Game Loop
+    // Begin the game loop
     for !rl.WindowShouldClose() 
     {
         dt := rl.GetFrameTime()
 
-        // Update Entities --> entity_handler
-        update_player(&player, &p_bullet, dt)
+        update_player(&player, &player_bullet, dt)
         update_formation(&enemies, dt)
         update_enemy_shots(&enemies, &enemy_bullets, dt)
-        update_bullets(&p_bullet, &enemy_bullets, dt)
+        update_bullets(&player_bullet, &enemy_bullets, dt)
+        handle_collision(&player, &player_bullet, &enemies, &enemy_bullets)
 
-        // Begin handling collisions after done testing
-        handle_collision(&player, &p_bullet, &enemies, &enemy_bullets)
-
-        // Raylib Functions
         rl.BeginDrawing()
         rl.ClearBackground(rl.BLACK)
 
-        // Draw Entities --> entity_drawer
         draw_player(&player)
-        draw_player_bullet(&p_bullet)
+        draw_player_bullet(&player_bullet)
         draw_enemies(&enemies)
         draw_enemy_bullets(&enemy_bullets)
 
-        if !player.alive { 
-            game_over(&player)
+        if !player.alive {
+            draw_game_over()
+            try_revive_player(&player)
         }
 
-        if rl.IsKeyPressed(.ESCAPE) { break } // Close Main Loop
+        if rl.IsKeyPressed(.ESCAPE) { break }
         rl.EndDrawing()
     }
-    
+
     fmt.println("Successfully closed")
     rl.CloseWindow()
 }
 
-game_over :: proc(p: ^Player) {
-    textWidth := rl.MeasureText("PRESS SPACE TO CONTINUE", 34)
+GAME_OVER_FONT_SIZE :: 34
+GAME_OVER_TEXT :: "PRESS SPACE TO CONTINUE"
 
-    rl.DrawText("PRESS SPACE TO CONTINUE",
-        (SCREEN_W / 2) - (textWidth/2),
-        (SCREEN_H / 2) - (34/2), 
-        34, 
-        rl.WHITE)
+draw_game_over :: proc() 
+{
+    text_width := rl.MeasureText(GAME_OVER_TEXT, GAME_OVER_FONT_SIZE)
+    rl.DrawText(
+        GAME_OVER_TEXT,
+        (SCREEN_W / 2) - (text_width / 2),
+        (SCREEN_H / 2) - (GAME_OVER_FONT_SIZE / 2),
+        GAME_OVER_FONT_SIZE,
+        rl.WHITE,
+    )
+}
 
+try_revive_player :: proc(p: ^Player) 
+{
     if rl.IsKeyPressed(.SPACE) { p.alive = true }
 }
