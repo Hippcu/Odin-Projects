@@ -1,0 +1,8 @@
+All os level args are collected from main.odin
+args are checked for matches/recognition in their subsequent run_ procs
+All accepted args/COMMANDS are Unions and posses correspoinding procs
+
+
+TODO
+- Actually init something -- flesh out the run_init proc
+- Flesh out the skeleton of the actual version control system 

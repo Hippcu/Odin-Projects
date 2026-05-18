@@ -17,9 +17,16 @@ INIT :: struct {
 }
 
 // cit add -m "Insert Text"
+// cit add --dry-run
 ADD :: struct {
     message: string `cli:"m,message/required"`, // -m <msg> required
+    dry_run: bool `cli:"d, dry-run"`            // -d or --dry-run
 }
+
+
+/*
+    Procs for various COMMANDS
+*/
 
 run_init :: proc(cmd: INIT, args: []string) {
     value: string = ""
@@ -33,9 +40,9 @@ run_init :: proc(cmd: INIT, args: []string) {
 
 run_add :: proc(cmd: ADD, args: []string) {
     if len(args) == 0 {
-        fmt.println("cit add: requires at least one piece")
+        fmt.println("cit add: requires at least one arg")
         os.exit(1)
     }
 
-    fmt.println("Running `cit add` with pieces:", args)
+    fmt.println("Running `cit add` with:", args)
 }
