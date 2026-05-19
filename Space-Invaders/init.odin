@@ -39,3 +39,17 @@ init_invaders :: proc() -> InvaderFormation
     update_formation_bounds(&formation)
     return formation
 }
+
+reset_game :: proc(
+    player: ^Player,
+    player_bullet: ^Bullet,
+    formation: ^InvaderFormation,
+    enemy_bullets: ^[ENEMY_BULLET_POOL_SIZE]Bullet,
+) {
+    player^ = init_player()
+    player_bullet.active = false
+    formation^ = init_invaders()
+    for &b in enemy_bullets {
+        b.active = false
+    }
+}

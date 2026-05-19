@@ -14,17 +14,24 @@ main :: proc()
     player_bullet: Bullet
     enemies := init_invaders()
     enemy_bullets: [ENEMY_BULLET_POOL_SIZE]Bullet
+    game_over := false
 
     // Begin the game loop
     for !rl.WindowShouldClose() 
     {
         dt := rl.GetFrameTime()
 
-        update_player(&player, &player_bullet, dt)
-        update_formation(&enemies, dt)
-        update_enemy_shots(&enemies, &enemy_bullets, dt)
-        update_bullets(&player_bullet, &enemy_bullets, dt)
-        handle_collision(&player, &player_bullet, &enemies, &enemy_bullets)
+        if !game_over {
+            update_player(&player, &player_bullet, dt)
+            update_formation(&enemies, dt)
+            update_enemy_shots(&enemies, &enemy_bullets, dt)
+            update_bullets(&player_bullet, &enemy_bullets, dt)
+            handle_collision(&player, &player_bullet, &enemies, &enemy_bullets)
+
+            if all_enemies_gone(&enemies) {
+                game_over = true
+            }
+        }
 
         rl.BeginDrawing()
         rl.ClearBackground(rl.BLACK)
@@ -34,7 +41,13 @@ main :: proc()
         draw_enemies(&enemies)
         draw_enemy_bullets(&enemy_bullets)
 
-        if !player.alive {
+        if game_over {
+            draw_game_over()
+            if rl.IsKeyPressed(.SPACE) {
+                reset_game(&player, &player_bullet, &enemies, &enemy_bullets)
+                game_over = false
+            }
+        } else if !player.alive {
             draw_game_over()
             try_revive_player(&player)
         }

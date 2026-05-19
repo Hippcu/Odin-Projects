@@ -19,6 +19,18 @@ update_player :: proc(p: ^Player, b: ^Bullet, dt: f32)
     }
 }
 
+all_enemies_gone :: proc(formation: ^InvaderFormation) -> bool 
+{
+    for row in 0..<ENMY_ROWS {
+        for col in 0..<ENMY_COLS {
+            inv := &formation.enemies[row][col]
+            if !inv.alive { continue }
+            if inv.pos.y <= SCREEN_H { return false }
+        }
+    }
+    return true
+}
+
 update_formation_bounds :: proc(formation: ^InvaderFormation) 
 {
     min_x := f32(SCREEN_W)
